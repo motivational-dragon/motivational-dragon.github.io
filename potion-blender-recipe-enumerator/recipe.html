@@ -88,8 +88,8 @@
             const outputItem = document.getElementById('outputItem').value;
             const lastIngredient = document.getElementById('lastIngredient').value;
 
-			//parameter validation
-			if(maxRecipeLength <= 3){alert("Default recipe already include potions combination up to 3 items")}
+	    //parameter validation
+	    if(maxRecipeLength <= 3){alert("Default recipe already include potions combination for up to 3 items"); return;}
 
             // Fixed output count (hardcoded)
             const outputCount = 1;
