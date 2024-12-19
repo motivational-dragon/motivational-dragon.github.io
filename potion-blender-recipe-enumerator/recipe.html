@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe enumerator for potion blender</title>
+    <style>
+        label {
+            display: block;
+            margin: 10px 0;
+        }
+        input {
+            margin-bottom: 10px;
+        }
+    </style>
+	
+	  <style>
+        label {
+            display: block;
+            margin: 10px 0;
+        }
+        input {
+            margin-bottom: 10px;
+
+        }
+        button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+	
+    <!-- Include JSZip library -->
+    <script src="./jszip.min.js"></script>
+</head>
+<body>
+    <h1>Generate Minecraft Recipe Files in ZIP Archive</h1>
+    
+    <!-- Max Recipe Length Input -->
+    <label for="maxRecipeLength">Max Recipe Length:</label>
+    <input type="number" id="maxRecipeLength" value="3" min="2" />
+    
+    <!-- Output Item Input -->
+    <label for="outputItem">Output Item (e.g., minecraft:potion):</label>
+    <input type="text" id="outputItem" value="minecraft:potion" />
+    
+    <!-- Last Ingredient Input -->
+    <label for="lastIngredient">Last Ingredient (e.g., minecraft:nether_wart):</label>
+    <input type="text" id="lastIngredient" value="minecraft:nether_wart" />
+    
+    <button onclick="generateAndDownloadZip()">Generate recipes</button>
+
+    <script>
+        // Function to generate recipes
+        function generateRecipe(recipeLength, outputItem, outputCount, lastIngredient) {
+            const recipe = {
+                "type": "potionblender:potion_blending",
+                "brewingTime": 140,
+                "usePotionMergingRules": true,
+                "isOrdered": true,
+                "ingredients": [],
+                "output": {
+                    "item": outputItem,
+                    "count": outputCount
+                }
+            };
+
+            // Add ingredients dynamically based on recipe length
+            for (let i = 0; i < recipeLength; i++) {
+                recipe.ingredients.push({
+                    "item": "minecraft:potion"
+                });
+            }
+
+            // Add the last ingredient dynamically
+            recipe.ingredients.push({
+                "item": lastIngredient
+            });
+
+            return recipe;
+        }
+
+        // Function to generate the ZIP archive with recipe files
+        function generateAndDownloadZip() {
+            // Get values from the input fields
+            const maxRecipeLength = parseInt(document.getElementById('maxRecipeLength').value);
+            const outputItem = document.getElementById('outputItem').value;
+            const lastIngredient = document.getElementById('lastIngredient').value;
+
+			//parameter validation
+			if(maxRecipeLength <= 3){alert("Default recipe already include potions combination up to 3 items")}
+
+            // Fixed output count (hardcoded)
+            const outputCount = 1;
+
+            // Extract the item name from the output item (remove 'minecraft:' prefix)
+            const outputItemName = outputItem.split(':')[1];
+
+            // Extract the ingredient name from the last ingredient (remove 'minecraft:' prefix)
+            const lastIngredientName = lastIngredient.split(':')[1];
+
+            // Create a new JSZip instance
+            const zip = new JSZip();
+
+            // Loop through each recipe length from 2 to maxRecipeLength
+            for (let recipeLength = 4; recipeLength <= maxRecipeLength; recipeLength++) {
+                // Generate the recipe
+                const recipe = generateRecipe(recipeLength, outputItem, outputCount, lastIngredient);
+
+                // Create the file name based on the output item name, last ingredient name, and recipe length
+                const fileName = `combined_${outputItemName}_${lastIngredientName}_${recipeLength}.json`;
+
+                // Add the recipe file to the ZIP archive
+                zip.file(fileName, JSON.stringify(recipe, null, 2));
+            }
+
+            // Generate the ZIP file and trigger the download
+            zip.generateAsync({ type: "blob" })
+                .then(function(content) {
+                    // Create a download link for the ZIP file
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(content);
+                    link.download = "recipes.zip";  // Name of the ZIP file
+                    link.click();  // Trigger the download
+                });
+        }
+    </script>
+</body>
+</html>
