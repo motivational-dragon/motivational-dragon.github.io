@@ -98,9 +98,6 @@
             // Extract the item name from the output item (remove 'minecraft:' prefix)
             const outputItemName = outputItem.split(':')[1];
 
-            // Extract the ingredient name from the last ingredient (remove 'minecraft:' prefix)
-            const lastIngredientName = lastIngredient.split(':')[1];
-
             // Create a new JSZip instance
             const zip = new JSZip();
 
@@ -110,7 +107,7 @@
                 const recipe = generateRecipe(recipeLength, outputItem, outputCount, lastIngredient);
 
                 // Create the file name based on the output item name, last ingredient name, and recipe length
-                const fileName = `combined_${outputItemName}_${lastIngredientName}_${recipeLength}.json`;
+                const fileName = `combined_${outputItemName}_${recipeLength}.json`;
 
                 // Add the recipe file to the ZIP archive
                 zip.file(fileName, JSON.stringify(recipe, null, 2));
